@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>TaskMaster - Modern To-Do List</title>
+    <meta name="description" content="A modern, feature-rich to-do list application with dark mode and offline support">
+    <meta name="keywords" content="todo, task, productivity, organize, checklist">
+    <meta name="author" content="Professional Web Developer">
+    
+    <!-- Progressive Web App -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="TaskMaster">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234f46e5'/%3E%3Ctext x='50' y='55' font-family='Arial' font-size='45' fill='white' text-anchor='middle'%3E✓%3C/text%3E%3C/svg%3E">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configure Tailwind for dark mode
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-in-out',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'bounce-in': 'bounceIn 0.5s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        bounceIn: {
+                            '0%': { transform: 'scale(0.3)', opacity: '0' },
+                            '50%': { transform: 'scale(1.05)' },
+                            '70%': { transform: 'scale(0.9)' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* Custom background with overlay */
+        .bg-pattern {
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, rgba(79, 70, 229, 0.05) 0%, rgba(99, 102, 241, 0.05) 50%, rgba(139, 92, 246, 0.05) 100%),
+                url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%234f46e9" fill-opacity="0.03"><path d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/></g></g></svg>');
+        }
+        
+        .dark .bg-pattern {
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(31, 41, 55, 0.9) 50%, rgba(55, 65, 81, 0.9) 100%),
+                url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%236366f1" fill-opacity="0.08"><path d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/></g></g></svg>');
+        }
+        
+        /* Animated background elements */
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .floating-shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+        
+        .floating-shape:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+            animation-duration: 25s;
+        }
+        
+        .floating-shape:nth-child(2) {
+            top: 20%;
+            right: 10%;
+            animation-delay: -5s;
+            animation-duration: 30s;
+        }
+        
+        .floating-shape:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: -10s;
+            animation-duration: 35s;
+        }
+        
+        .floating-shape:nth-child(4) {
+            bottom: 10%;
+            right: 20%;
+            animation-delay: -15s;
+            animation-duration: 28s;
+        }
+        
+        .floating-shape:nth-child(5) {
+            top: 50%;
+            left: 50%;
+            animation-delay: -8s;
+            animation-duration: 32s;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            33% {
+                transform: translate(30px, -30px) rotate(120deg);
+            }
+            66% {
+                transform: translate(-20px, 20px) rotate(240deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+        
+        /* Glass morphism effect for containers */
+        .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        
+        .dark .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(17, 24, 39, 0.75);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-pattern min-h-screen transition-all duration-300 relative">
+    <!-- Floating Background Shapes -->
+    <div class="floating-shapes">
+        <div class="floating-shape w-16 h-16 bg-indigo-500 rounded-full"></div>
+        <div class="floating-shape w-12 h-12 bg-purple-500 rounded-lg rotate-45"></div>
+        <div class="floating-shape w-20 h-20 bg-blue-500 rounded-full"></div>
+        <div class="floating-shape w-8 h-8 bg-pink-500 rounded-full"></div>
+        <div class="floating-shape w-14 h-14 bg-green-500 rounded-lg rotate-12"></div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-2xl relative z-10">
+        <!-- Header Section -->
+        <header class="text-center mb-8 animate-fade-in">
+            <div class="flex items-center justify-between mb-4">
+                <h1 class="text-4xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
+                    <i class="fas fa-tasks text-indigo-600 dark:text-indigo-400"></i>
+                    TaskMaster
+                </h1>
+                <!-- Dark Mode Toggle -->
+                <button id="theme-toggle" 
+                        class="p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        aria-label="Toggle dark mode">
+                    <i class="fas fa-sun text-yellow-500 dark:hidden"></i>
+                    <i class="fas fa-moon text-gray-300 hidden dark:block"></i>
+                </button>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 text-lg">Stay organized, stay productive</p>
+        </header>        <!-- Task Input Section -->
+        <div class="glass-effect rounded-2xl shadow-xl p-6 mb-8 animate-slide-in">
+            <form id="todo-form" class="flex gap-3">
+                <div class="flex-1 relative">
+                    <input type="text" 
+                           id="todo-input" 
+                           placeholder="Add a new task..." 
+                           class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-indigo-500 focus:outline-none transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                           aria-label="New task input"
+                           required>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                        <i class="fas fa-pencil-alt text-gray-400"></i>
+                    </div>
+                </div>
+                <button type="submit" 
+                        class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-lg hover:shadow-xl"
+                        aria-label="Add task">
+                    <i class="fas fa-plus mr-2"></i>Add Task
+                </button>
+            </form>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="flex flex-wrap justify-center gap-3 mb-8 animate-slide-in">
+            <button class="filter-btn active" data-filter="all" aria-label="Show all tasks">
+                <i class="fas fa-list mr-2"></i>All (<span id="all-count">0</span>)
+            </button>
+            <button class="filter-btn" data-filter="active" aria-label="Show active tasks">
+                <i class="fas fa-clock mr-2"></i>Active (<span id="active-count">0</span>)
+            </button>
+            <button class="filter-btn" data-filter="completed" aria-label="Show completed tasks">
+                <i class="fas fa-check-circle mr-2"></i>Completed (<span id="completed-count">0</span>)
+            </button>
+        </div>        <!-- Tasks Container -->
+        <div class="glass-effect rounded-2xl shadow-xl overflow-hidden animate-slide-in">
+            <!-- Tasks List -->
+            <ul id="todo-list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                <!-- Tasks will be dynamically added here -->
+            </ul>
+            
+            <!-- Empty State -->
+            <div id="empty-state" class="text-center py-12 px-6 hidden">
+                <div class="text-6xl text-gray-300 dark:text-gray-600 mb-4">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">No tasks found</h3>
+                <p class="text-gray-500 dark:text-gray-500">Add your first task to get started!</p>
+            </div>
+        </div>
+
+        <!-- Bulk Actions -->
+        <div id="bulk-actions" class="mt-6 flex flex-wrap justify-center gap-3 hidden animate-fade-in">
+            <button id="complete-all" 
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                <i class="fas fa-check-double mr-2"></i>Complete All
+            </button>
+            <button id="delete-completed" 
+                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500">
+                <i class="fas fa-trash mr-2"></i>Delete Completed
+            </button>
+        </div>        <!-- Statistics -->
+        <div class="mt-8 glass-effect rounded-2xl shadow-xl p-6 animate-fade-in">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                <i class="fas fa-chart-pie text-indigo-600 dark:text-indigo-400"></i>
+                Statistics
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                    <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400" id="total-tasks">0</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Total Tasks</div>
+                </div>
+                <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                    <div class="text-2xl font-bold text-green-600 dark:text-green-400" id="completion-rate">0%</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Completion Rate</div>
+                </div>
+                <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                    <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="tasks-today">0</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Tasks Today</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">        <div class="glass-effect rounded-2xl shadow-2xl max-w-md w-full animate-bounce-in">
+            <div class="p-6">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                    <i class="fas fa-edit text-indigo-600 dark:text-indigo-400"></i>
+                    Edit Task
+                </h3>
+                <form id="edit-form">
+                    <input type="text" 
+                           id="edit-input" 
+                           class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-indigo-500 focus:outline-none transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white mb-4"
+                           required>
+                    <div class="flex gap-3 justify-end">
+                        <button type="button" 
+                                id="cancel-edit" 
+                                class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-300">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .filter-btn {
+            @apply px-4 py-2 rounded-lg font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500;
+            @apply bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600;
+        }
+        
+        .filter-btn.active {
+            @apply bg-indigo-600 text-white shadow-lg transform scale-105;
+        }
+        
+        .task-item {
+            @apply transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-750;
+        }
+        
+        .task-completed {
+            @apply opacity-60;
+        }
+        
+        .task-text-completed {
+            @apply line-through text-gray-500 dark:text-gray-400;
+        }
+        
+        .checkbox-custom {
+            @apply w-5 h-5 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 transition-all duration-300;
+        }
+        
+        .task-entering {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .task-leaving {
+            animation: slideOut 0.3s ease-in forwards;
+        }
+        
+        @keyframes slideOut {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+
+    <script src="app.js"></script>
+</body>
+</html>
