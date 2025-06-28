@@ -17,6 +17,9 @@ class TaskMasterPro {
         // Get DOM elements
         this.initializeElements();
         
+        // Clear any demo data first
+        this.clearDemoData();
+        
         // Load tasks from localStorage
         this.loadTasks();
         
@@ -39,6 +42,26 @@ class TaskMasterPro {
         this.startProductivityTracking();
         
         console.log('🚀 TaskMaster Pro initialized successfully!');
+    }
+
+    /**
+     * Clear any existing demo data to ensure clean start
+     */
+    clearDemoData() {
+        try {
+            const savedTasks = localStorage.getItem('taskmaster-pro-tasks');
+            if (savedTasks) {
+                const tasks = JSON.parse(savedTasks);
+                // Remove any demo tasks
+                const cleanTasks = tasks.filter(task => task.category !== 'demo');
+                if (cleanTasks.length !== tasks.length) {
+                    localStorage.setItem('taskmaster-pro-tasks', JSON.stringify(cleanTasks));
+                }
+            }
+        } catch (error) {
+            console.log('Clearing demo data...');
+            localStorage.removeItem('taskmaster-pro-tasks');
+        }
     }
 
     /**
@@ -276,16 +299,18 @@ class TaskMasterPro {
             const savedTasks = localStorage.getItem('taskmaster-pro-tasks');
             this.tasks = savedTasks ? JSON.parse(savedTasks) : [];
             
-            // Ensure all tasks have required properties
-            this.tasks = this.tasks.map(task => ({
-                id: task.id || Date.now() + Math.random(),
-                text: task.text || '',
-                completed: task.completed || false,
-                createdAt: task.createdAt || new Date().toISOString(),
-                updatedAt: task.updatedAt || new Date().toISOString(),
-                priority: task.priority || 'medium',
-                category: task.category || 'general'
-            }));
+            // Ensure all tasks have required properties and filter out demo tasks
+            this.tasks = this.tasks
+                .filter(task => task.category !== 'demo') // Remove any demo tasks
+                .map(task => ({
+                    id: task.id || Date.now() + Math.random(),
+                    text: task.text || '',
+                    completed: task.completed || false,
+                    createdAt: task.createdAt || new Date().toISOString(),
+                    updatedAt: task.updatedAt || new Date().toISOString(),
+                    priority: task.priority || 'medium',
+                    category: task.category || 'general'
+                }));
         } catch (error) {
             console.error('Error loading tasks:', error);
             this.tasks = [];
@@ -878,7 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create global instance
     window.taskMasterPro = new TaskMasterPro();
     
-    // Show welcome message for first-time users
+    // Show welcome message for first-time users (only if no tasks exist)
     if (window.taskMasterPro.tasks.length === 0) {
         setTimeout(() => {
             window.taskMasterPro.showNotification('Welcome to TaskMaster Pro! Start by adding your first task. ✨', 'info');
