@@ -1,16 +1,18 @@
 /**
- * Modern To-Do List Application
- * Features: Add, Edit, Delete, Complete tasks with localStorage persistence
- * Author: Professional Web Developer
+ * TaskMaster Pro - Advanced Task Management Application
+ * Features: Enhanced animations, modern UI, productivity tracking
+ * Author: TaskMaster Pro Team
  * Date: 2025
  */
 
-class TodoApp {
+class TaskMasterPro {
     constructor() {
         // Initialize properties
         this.tasks = [];
         this.currentFilter = 'all';
         this.editingTaskId = null;
+        this.animationQueue = [];
+        this.productivityScore = 0;
         
         // Get DOM elements
         this.initializeElements();
@@ -24,10 +26,19 @@ class TodoApp {
         // Initialize theme
         this.initializeTheme();
         
+        // Initialize particles
+        this.initializeParticles();
+        
+        // Initialize scroll animations
+        this.initializeScrollAnimations();
+        
         // Initial render
         this.render();
         
-        console.log('TodoApp initialized successfully! 🚀');
+        // Start productivity tracking
+        this.startProductivityTracking();
+        
+        console.log('🚀 TaskMaster Pro initialized successfully!');
     }
 
     /**
@@ -59,6 +70,11 @@ class TodoApp {
         this.totalTasks = document.getElementById('total-tasks');
         this.completionRate = document.getElementById('completion-rate');
         this.tasksToday = document.getElementById('tasks-today');
+        this.productivityScoreEl = document.getElementById('productivity-score');
+        
+        // Progress elements
+        this.progressBar = document.getElementById('progress-bar');
+        this.progressPercentage = document.getElementById('progress-percentage');
         
         // Theme toggle
         this.themeToggle = document.getElementById('theme-toggle');
@@ -68,6 +84,9 @@ class TodoApp {
         this.editForm = document.getElementById('edit-form');
         this.editInput = document.getElementById('edit-input');
         this.cancelEditBtn = document.getElementById('cancel-edit');
+        
+        // FAB
+        this.fabAdd = document.getElementById('fab-add');
     }
 
     /**
@@ -100,8 +119,95 @@ class TodoApp {
             }
         });
         
+        // FAB
+        this.fabAdd.addEventListener('click', () => {
+            this.todoInput.focus();
+            this.todoInput.scrollIntoView({ behavior: 'smooth' });
+        });
+        
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => this.handleKeyboardShortcuts(e));
+        
+        // Scroll events for FAB
+        window.addEventListener('scroll', () => this.handleScroll());
+        
+        // Input animations
+        this.todoInput.addEventListener('focus', () => this.animateInputFocus());
+        this.todoInput.addEventListener('blur', () => this.animateInputBlur());
+    }
+
+    /**
+     * Handle scroll events
+     */
+    handleScroll() {
+        const scrollY = window.scrollY;
+        if (scrollY > 200) {
+            this.fabAdd.classList.remove('hidden');
+            this.fabAdd.style.transform = 'scale(1)';
+        } else {
+            this.fabAdd.style.transform = 'scale(0)';
+            setTimeout(() => {
+                if (window.scrollY <= 200) {
+                    this.fabAdd.classList.add('hidden');
+                }
+            }, 300);
+        }
+    }
+
+    /**
+     * Animate input focus
+     */
+    animateInputFocus() {
+        this.todoInput.parentElement.style.transform = 'scale(1.02)';
+        this.todoInput.parentElement.style.boxShadow = '0 20px 40px rgba(99, 102, 241, 0.2)';
+    }
+
+    /**
+     * Animate input blur
+     */
+    animateInputBlur() {
+        this.todoInput.parentElement.style.transform = 'scale(1)';
+        this.todoInput.parentElement.style.boxShadow = '';
+    }
+
+    /**
+     * Initialize floating particles
+     */
+    initializeParticles() {
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 50;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    /**
+     * Initialize scroll animations
+     */
+    initializeScrollAnimations() {
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for scroll animations
+        document.querySelectorAll('.scroll-reveal').forEach(el => {
+            observer.observe(el);
+        });
     }
 
     /**
@@ -116,6 +222,17 @@ class TodoApp {
         // Ctrl/Cmd + Enter to add task quickly
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
             this.todoInput.focus();
+        }
+        
+        // Ctrl/Cmd + A to complete all tasks
+        if ((e.ctrlKey || e.metaKey) && e.key === 'a' && e.target !== this.todoInput) {
+            e.preventDefault();
+            this.completeAllTasks();
+        }
+        
+        // Delete key to delete completed tasks
+        if (e.key === 'Delete' && e.target !== this.todoInput && e.target !== this.editInput) {
+            this.deleteCompletedTasks();
         }
     }
 
@@ -138,11 +255,17 @@ class TodoApp {
         const isDark = document.documentElement.classList.toggle('dark');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
         
-        // Add a nice animation effect
-        this.themeToggle.style.transform = 'rotate(360deg)';
+        // Enhanced animation effect
+        this.themeToggle.style.transform = 'rotate(360deg) scale(1.2)';
         setTimeout(() => {
             this.themeToggle.style.transform = '';
-        }, 300);
+        }, 500);
+        
+        // Show theme change notification
+        this.showNotification(
+            `Switched to ${isDark ? 'dark' : 'light'} mode! 🌙✨`, 
+            'info'
+        );
     }
 
     /**
@@ -150,7 +273,7 @@ class TodoApp {
      */
     loadTasks() {
         try {
-            const savedTasks = localStorage.getItem('todoTasks');
+            const savedTasks = localStorage.getItem('taskmaster-pro-tasks');
             this.tasks = savedTasks ? JSON.parse(savedTasks) : [];
             
             // Ensure all tasks have required properties
@@ -159,7 +282,9 @@ class TodoApp {
                 text: task.text || '',
                 completed: task.completed || false,
                 createdAt: task.createdAt || new Date().toISOString(),
-                updatedAt: task.updatedAt || new Date().toISOString()
+                updatedAt: task.updatedAt || new Date().toISOString(),
+                priority: task.priority || 'medium',
+                category: task.category || 'general'
             }));
         } catch (error) {
             console.error('Error loading tasks:', error);
@@ -172,12 +297,11 @@ class TodoApp {
      */
     saveTasks() {
         try {
-            localStorage.setItem('todoTasks', JSON.stringify(this.tasks));
+            localStorage.setItem('taskmaster-pro-tasks', JSON.stringify(this.tasks));
         } catch (error) {
             console.error('Error saving tasks:', error);
-            // Handle storage quota exceeded
             if (error.name === 'QuotaExceededError') {
-                alert('Storage quota exceeded. Please delete some completed tasks.');
+                this.showNotification('Storage quota exceeded. Please delete some completed tasks.', 'error');
             }
         }
     }
@@ -196,16 +320,71 @@ class TodoApp {
             text: taskText,
             completed: false,
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
+            priority: 'medium',
+            category: 'general'
         };
         
-        this.tasks.unshift(newTask); // Add to beginning for recent-first order
+        this.tasks.unshift(newTask);
         this.todoInput.value = '';
         this.saveTasks();
         this.render();
         
-        // Show success feedback
-        this.showNotification('Task added successfully! ✅', 'success');
+        // Enhanced success feedback with confetti effect
+        this.showNotification('Task added successfully! 🎉', 'success');
+        this.createConfettiEffect();
+        
+        // Update productivity score
+        this.updateProductivityScore(5);
+    }
+
+    /**
+     * Create confetti effect
+     */
+    createConfettiEffect() {
+        const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'];
+        const confettiCount = 30;
+        
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.style.position = 'fixed';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.top = '-10px';
+            confetti.style.width = '10px';
+            confetti.style.height = '10px';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.borderRadius = '50%';
+            confetti.style.pointerEvents = 'none';
+            confetti.style.zIndex = '9999';
+            confetti.style.animation = `confettiFall ${Math.random() * 2 + 2}s linear forwards`;
+            
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                if (confetti.parentNode) {
+                    confetti.parentNode.removeChild(confetti);
+                }
+            }, 4000);
+        }
+        
+        // Add confetti animation keyframes
+        if (!document.getElementById('confetti-styles')) {
+            const style = document.createElement('style');
+            style.id = 'confetti-styles';
+            style.textContent = `
+                @keyframes confettiFall {
+                    0% {
+                        transform: translateY(-10px) rotate(0deg);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translateY(100vh) rotate(360deg);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
     }
 
     /**
@@ -217,9 +396,17 @@ class TodoApp {
         
         this.currentFilter = filter;
         
-        // Update active filter button
-        this.filterButtons.forEach(btn => btn.classList.remove('active'));
+        // Update active filter button with enhanced animation
+        this.filterButtons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.style.transform = 'scale(1)';
+        });
         e.target.classList.add('active');
+        e.target.style.transform = 'scale(1.05)';
+        
+        setTimeout(() => {
+            e.target.style.transform = '';
+        }, 200);
         
         this.render();
     }
@@ -235,9 +422,28 @@ class TodoApp {
             this.saveTasks();
             this.render();
             
-            // Show feedback
-            const message = task.completed ? 'Task completed! 🎉' : 'Task marked as active! 📝';
-            this.showNotification(message, task.completed ? 'success' : 'info');
+            // Enhanced feedback with different animations
+            if (task.completed) {
+                this.showNotification('Task completed! 🎉', 'success');
+                this.updateProductivityScore(10);
+                this.animateTaskCompletion(id);
+            } else {
+                this.showNotification('Task marked as active! 📝', 'info');
+                this.updateProductivityScore(-5);
+            }
+        }
+    }
+
+    /**
+     * Animate task completion
+     */
+    animateTaskCompletion(taskId) {
+        const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+        if (taskElement) {
+            taskElement.style.animation = 'pulse 0.5s ease-in-out';
+            setTimeout(() => {
+                taskElement.style.animation = '';
+            }, 500);
         }
     }
 
@@ -247,19 +453,18 @@ class TodoApp {
     deleteTask(id) {
         const taskIndex = this.tasks.findIndex(t => t.id === id);
         if (taskIndex !== -1) {
-            const task = this.tasks[taskIndex];
-            
-            // Add leaving animation
             const taskElement = document.querySelector(`[data-task-id="${id}"]`);
+            
             if (taskElement) {
-                taskElement.classList.add('task-leaving');
+                // Enhanced leaving animation
+                taskElement.style.animation = 'slideOut 0.4s ease-in forwards';
                 
                 setTimeout(() => {
                     this.tasks.splice(taskIndex, 1);
                     this.saveTasks();
                     this.render();
                     this.showNotification('Task deleted! 🗑️', 'info');
-                }, 300);
+                }, 400);
             } else {
                 this.tasks.splice(taskIndex, 1);
                 this.saveTasks();
@@ -279,8 +484,12 @@ class TodoApp {
             this.editInput.value = task.text;
             this.editModal.classList.remove('hidden');
             this.editModal.classList.add('flex');
-            this.editInput.focus();
-            this.editInput.select();
+            
+            // Enhanced modal animation
+            setTimeout(() => {
+                this.editInput.focus();
+                this.editInput.select();
+            }, 100);
         }
     }
 
@@ -301,6 +510,7 @@ class TodoApp {
             this.render();
             this.closeEditModal();
             this.showNotification('Task updated! ✏️', 'success');
+            this.updateProductivityScore(3);
         }
     }
 
@@ -332,6 +542,8 @@ class TodoApp {
         this.saveTasks();
         this.render();
         this.showNotification(`${activeTasks.length} tasks completed! 🎉`, 'success');
+        this.updateProductivityScore(activeTasks.length * 10);
+        this.createConfettiEffect();
     }
 
     /**
@@ -367,27 +579,36 @@ class TodoApp {
     }
 
     /**
-     * Update task counts
+     * Update task counts and progress
      */
     updateCounts() {
         const allTasks = this.tasks.length;
         const activeTasks = this.tasks.filter(task => !task.completed).length;
         const completedTasks = this.tasks.filter(task => task.completed).length;
         
-        this.allCount.textContent = allTasks;
-        this.activeCount.textContent = activeTasks;
-        this.completedCount.textContent = completedTasks;
+        // Animate count changes
+        this.animateCountChange(this.allCount, allTasks);
+        this.animateCountChange(this.activeCount, activeTasks);
+        this.animateCountChange(this.completedCount, completedTasks);
         
         // Update statistics
-        this.totalTasks.textContent = allTasks;
-        this.completionRate.textContent = allTasks > 0 ? Math.round((completedTasks / allTasks) * 100) + '%' : '0%';
+        this.animateCountChange(this.totalTasks, allTasks);
+        
+        const completionPercentage = allTasks > 0 ? Math.round((completedTasks / allTasks) * 100) : 0;
+        this.animateCountChange(this.completionRate, completionPercentage, '%');
+        
+        // Update progress bar
+        this.updateProgressBar(completionPercentage);
         
         // Calculate tasks created today
         const today = new Date().toDateString();
         const tasksToday = this.tasks.filter(task => 
             new Date(task.createdAt).toDateString() === today
         ).length;
-        this.tasksToday.textContent = tasksToday;
+        this.animateCountChange(this.tasksToday, tasksToday);
+        
+        // Update productivity score display
+        this.animateCountChange(this.productivityScoreEl, this.productivityScore);
         
         // Show/hide bulk actions
         if (allTasks > 0) {
@@ -398,46 +619,121 @@ class TodoApp {
     }
 
     /**
+     * Animate count changes
+     */
+    animateCountChange(element, newValue, suffix = '') {
+        const currentValue = parseInt(element.textContent) || 0;
+        if (currentValue === newValue) return;
+        
+        const duration = 500;
+        const steps = 20;
+        const stepValue = (newValue - currentValue) / steps;
+        let currentStep = 0;
+        
+        const interval = setInterval(() => {
+            currentStep++;
+            const value = Math.round(currentValue + (stepValue * currentStep));
+            element.textContent = value + suffix;
+            
+            if (currentStep >= steps) {
+                clearInterval(interval);
+                element.textContent = newValue + suffix;
+            }
+        }, duration / steps);
+    }
+
+    /**
+     * Update progress bar
+     */
+    updateProgressBar(percentage) {
+        this.progressBar.style.width = percentage + '%';
+        this.progressPercentage.textContent = percentage + '%';
+        
+        // Add glow effect for high completion rates
+        if (percentage >= 80) {
+            this.progressBar.style.boxShadow = '0 0 20px rgba(34, 197, 94, 0.5)';
+        } else {
+            this.progressBar.style.boxShadow = '';
+        }
+    }
+
+    /**
+     * Start productivity tracking
+     */
+    startProductivityTracking() {
+        // Load saved productivity score
+        const savedScore = localStorage.getItem('taskmaster-pro-productivity');
+        this.productivityScore = savedScore ? parseInt(savedScore) : 0;
+        
+        // Save productivity score periodically
+        setInterval(() => {
+            localStorage.setItem('taskmaster-pro-productivity', this.productivityScore.toString());
+        }, 30000); // Save every 30 seconds
+    }
+
+    /**
+     * Update productivity score
+     */
+    updateProductivityScore(points) {
+        this.productivityScore = Math.max(0, this.productivityScore + points);
+        localStorage.setItem('taskmaster-pro-productivity', this.productivityScore.toString());
+    }
+
+    /**
      * Create HTML for a single task
      */
     createTaskHTML(task) {
         const createdDate = new Date(task.createdAt).toLocaleDateString();
         const isToday = new Date(task.createdAt).toDateString() === new Date().toDateString();
+        const priorityColors = {
+            high: 'text-red-500',
+            medium: 'text-yellow-500',
+            low: 'text-green-500'
+        };
         
         return `
-            <li class="task-item p-4 ${task.completed ? 'task-completed' : ''}" data-task-id="${task.id}">
-                <div class="flex items-center gap-4">
+            <li class="task-item p-6 ${task.completed ? 'task-completed' : ''} group" data-task-id="${task.id}">
+                <div class="flex items-center gap-6">
                     <!-- Checkbox -->
                     <div class="flex-shrink-0">
                         <input type="checkbox" 
                                class="checkbox-custom" 
                                ${task.completed ? 'checked' : ''}
-                               onchange="todoApp.toggleTask(${task.id})"
+                               onchange="taskMasterPro.toggleTask(${task.id})"
                                aria-label="Mark task as ${task.completed ? 'incomplete' : 'complete'}">
                     </div>
                     
                     <!-- Task Content -->
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between">
-                            <p class="text-lg font-medium text-gray-800 dark:text-white ${task.completed ? 'task-text-completed' : ''} break-words">
-                                ${this.escapeHtml(task.text)}
-                            </p>
-                            <div class="flex items-center gap-2 ml-4">
-                                ${isToday ? '<span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded-full">Today</span>' : ''}
-                                <span class="text-sm text-gray-500 dark:text-gray-400">${createdDate}</span>
+                            <div class="flex-1">
+                                <p class="text-lg font-medium text-gray-800 dark:text-white ${task.completed ? 'task-text-completed' : ''} break-words mb-1">
+                                    ${this.escapeHtml(task.text)}
+                                </p>
+                                <div class="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+                                    <span class="flex items-center gap-1">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        ${createdDate}
+                                    </span>
+                                    ${isToday ? '<span class="px-2 py-1 text-xs bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full">Today</span>' : ''}
+                                    <span class="flex items-center gap-1 ${priorityColors[task.priority]}">
+                                        <i class="fas fa-flag"></i>
+                                        ${task.priority}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Action Buttons -->
-                    <div class="flex items-center gap-2 flex-shrink-0">
-                        <button onclick="todoApp.editTask(${task.id})" 
-                                class="p-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    <div class="flex items-center gap-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button onclick="taskMasterPro.editTask(${task.id})" 
+                                class="p-3 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-110"
                                 aria-label="Edit task">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button onclick="todoApp.deleteTask(${task.id})" 
-                                class="p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        <button onclick="taskMasterPro.deleteTask(${task.id})" 
+                                class="p-3 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 transform hover:scale-110"
                                 aria-label="Delete task">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -457,23 +753,46 @@ class TodoApp {
     }
 
     /**
-     * Show notification to user
+     * Show enhanced notification to user
      */
     showNotification(message, type = 'info') {
         // Create notification element
         const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+        notification.className = `notification fixed top-6 right-6 z-50 p-4 rounded-2xl shadow-2xl transition-all duration-500 transform translate-x-full max-w-sm`;
         
-        // Set colors based on type
-        const colors = {
-            success: 'bg-green-500 text-white',
-            error: 'bg-red-500 text-white',
-            info: 'bg-blue-500 text-white',
-            warning: 'bg-yellow-500 text-black'
+        // Set colors and icons based on type
+        const config = {
+            success: { 
+                bg: 'bg-gradient-to-r from-green-500 to-emerald-500', 
+                text: 'text-white',
+                icon: 'fas fa-check-circle'
+            },
+            error: { 
+                bg: 'bg-gradient-to-r from-red-500 to-pink-500', 
+                text: 'text-white',
+                icon: 'fas fa-exclamation-circle'
+            },
+            info: { 
+                bg: 'bg-gradient-to-r from-blue-500 to-indigo-500', 
+                text: 'text-white',
+                icon: 'fas fa-info-circle'
+            },
+            warning: { 
+                bg: 'bg-gradient-to-r from-yellow-500 to-orange-500', 
+                text: 'text-white',
+                icon: 'fas fa-exclamation-triangle'
+            }
         };
         
-        notification.className += ` ${colors[type] || colors.info}`;
-        notification.textContent = message;
+        const typeConfig = config[type] || config.info;
+        notification.className += ` ${typeConfig.bg} ${typeConfig.text}`;
+        
+        notification.innerHTML = `
+            <div class="flex items-center gap-3">
+                <i class="${typeConfig.icon} text-xl"></i>
+                <span class="font-medium">${message}</span>
+            </div>
+        `;
         
         // Add to DOM
         document.body.appendChild(notification);
@@ -483,15 +802,15 @@ class TodoApp {
             notification.style.transform = 'translateX(0)';
         }, 100);
         
-        // Remove after 3 seconds
+        // Remove after 4 seconds
         setTimeout(() => {
             notification.style.transform = 'translateX(100%)';
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.parentNode.removeChild(notification);
                 }
-            }, 300);
-        }, 3000);
+            }, 500);
+        }, 4000);
     }
 
     /**
@@ -510,20 +829,26 @@ class TodoApp {
         } else {
             this.emptyState.classList.add('hidden');
             
-            // Render tasks with animation
+            // Render tasks with staggered animation
             this.todoList.innerHTML = filteredTasks
                 .map(task => this.createTaskHTML(task))
                 .join('');
             
-            // Add entering animation to new tasks
+            // Add staggered entering animation
             const taskElements = this.todoList.querySelectorAll('.task-item');
             taskElements.forEach((element, index) => {
-                element.style.animationDelay = `${index * 50}ms`;
-                element.classList.add('task-entering');
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    element.style.transition = 'all 0.4s ease';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 100);
             });
         }
         
-        // Update filter button text to show counts
+        // Update filter button counts with animation
         this.filterButtons.forEach(btn => {
             const filter = btn.dataset.filter;
             let count = 0;
@@ -542,7 +867,7 @@ class TodoApp {
             
             const countElement = btn.querySelector('span');
             if (countElement) {
-                countElement.textContent = count;
+                this.animateCountChange(countElement, count);
             }
         });
     }
@@ -551,47 +876,78 @@ class TodoApp {
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Create global instance
-    window.todoApp = new TodoApp();
+    window.taskMasterPro = new TaskMasterPro();
     
-    // Add some demo tasks if none exist (for first-time users)
-    if (window.todoApp.tasks.length === 0) {
+    // Add demo tasks if none exist (for first-time users)
+    if (window.taskMasterPro.tasks.length === 0) {
         const demoTasks = [
-            'Welcome to TaskMaster! 🎉',
-            'Try adding your first task',
-            'Mark tasks as complete by clicking the checkbox',
-            'Edit tasks by clicking the edit button',
-            'Delete tasks you no longer need'
+            { text: '🎉 Welcome to TaskMaster Pro!', priority: 'high' },
+            { text: '✨ Experience the enhanced animations', priority: 'medium' },
+            { text: '🎨 Try the beautiful dark mode', priority: 'medium' },
+            { text: '📱 Test the responsive design', priority: 'low' },
+            { text: '🚀 Boost your productivity!', priority: 'high' }
         ];
         
-        // Add demo tasks with a slight delay for better UX
+        // Add demo tasks with animation delay
         setTimeout(() => {
-            demoTasks.forEach((text, index) => {
+            demoTasks.forEach((taskData, index) => {
                 setTimeout(() => {
                     const task = {
                         id: Date.now() + Math.random(),
-                        text: text,
-                        completed: index > 2, // First 3 are active, last 2 are completed
+                        text: taskData.text,
+                        completed: index > 2,
                         createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
+                        updatedAt: new Date().toISOString(),
+                        priority: taskData.priority,
+                        category: 'demo'
                     };
-                    window.todoApp.tasks.push(task);
-                    window.todoApp.saveTasks();
-                    window.todoApp.render();
-                }, index * 200);
+                    window.taskMasterPro.tasks.push(task);
+                    window.taskMasterPro.saveTasks();
+                    window.taskMasterPro.render();
+                }, index * 300);
             });
         }, 1000);
     }
 });
 
-// Add service worker for offline functionality (Progressive Web App)
+// Enhanced service worker registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
             .then(registration => {
-                console.log('SW registered: ', registration);
+                console.log('🔧 Service Worker registered successfully:', registration);
             })
             .catch(registrationError => {
-                console.log('SW registration failed: ', registrationError);
+                console.log('❌ Service Worker registration failed:', registrationError);
             });
     });
 }
+
+// Add additional CSS animations
+const additionalStyles = document.createElement('style');
+additionalStyles.textContent = `
+    @keyframes slideOut {
+        0% { 
+            transform: translateX(0) scale(1); 
+            opacity: 1; 
+        }
+        100% { 
+            transform: translateX(100%) scale(0.8); 
+            opacity: 0; 
+        }
+    }
+    
+    .task-text-completed {
+        text-decoration: line-through;
+        opacity: 0.6;
+    }
+    
+    .task-completed {
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+    }
+    
+    .dark .task-completed {
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
+    }
+`;
+document.head.appendChild(additionalStyles);
