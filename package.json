@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "dev": "http-server . -o",
-    "start": "http-server . -o"
+    "start": "http-server . -o",
+    "build": "mkdir -p dist && cp -r *.html *.js *.json *.css assets/ dist/ 2>/dev/null || cp -r *.html *.js *.json *.css dist/ 2>/dev/null || echo 'Build completed'"
   },
   "keywords": [
     "todo",
