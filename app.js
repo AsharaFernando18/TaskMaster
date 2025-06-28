@@ -157,6 +157,41 @@ class TaskMasterPro {
         // Input animations
         this.todoInput.addEventListener('focus', () => this.animateInputFocus());
         this.todoInput.addEventListener('blur', () => this.animateInputBlur());
+        
+        // Touch events for mobile
+        this.addTouchEvents();
+    }
+
+    /**
+     * Add touch events for better mobile experience
+     */
+    addTouchEvents() {
+        // Prevent zoom on double tap for buttons
+        const buttons = document.querySelectorAll('button, .filter-btn, .checkbox-custom');
+        buttons.forEach(button => {
+            button.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                button.click();
+            });
+        });
+        
+        // Add touch feedback for task items
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.task-item')) {
+                e.target.closest('.task-item').style.backgroundColor = 'rgba(99, 102, 241, 0.05)';
+            }
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            if (e.target.closest('.task-item')) {
+                setTimeout(() => {
+                    const taskItem = e.target.closest('.task-item');
+                    if (taskItem) {
+                        taskItem.style.backgroundColor = '';
+                    }
+                }, 150);
+            }
+        });
     }
 
     /**
@@ -198,7 +233,9 @@ class TaskMasterPro {
      */
     initializeParticles() {
         const particlesContainer = document.getElementById('particles');
-        const particleCount = 50;
+        // Reduce particles on mobile for better performance
+        const isMobile = window.innerWidth <= 768;
+        const particleCount = isMobile ? 20 : 50;
         
         for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
@@ -368,15 +405,17 @@ class TaskMasterPro {
      */
     createConfettiEffect() {
         const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'];
-        const confettiCount = 30;
+        // Reduce confetti on mobile for better performance
+        const isMobile = window.innerWidth <= 768;
+        const confettiCount = isMobile ? 15 : 30;
         
         for (let i = 0; i < confettiCount; i++) {
             const confetti = document.createElement('div');
             confetti.style.position = 'fixed';
             confetti.style.left = Math.random() * 100 + 'vw';
             confetti.style.top = '-10px';
-            confetti.style.width = '10px';
-            confetti.style.height = '10px';
+            confetti.style.width = isMobile ? '6px' : '10px';
+            confetti.style.height = isMobile ? '6px' : '10px';
             confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
             confetti.style.borderRadius = '50%';
             confetti.style.pointerEvents = 'none';
@@ -717,8 +756,8 @@ class TaskMasterPro {
         };
         
         return `
-            <li class="task-item p-6 ${task.completed ? 'task-completed' : ''} group" data-task-id="${task.id}">
-                <div class="flex items-center gap-6">
+            <li class="task-item p-4 sm:p-6 ${task.completed ? 'task-completed' : ''} group" data-task-id="${task.id}">
+                <div class="flex items-center gap-3 sm:gap-6">
                     <!-- Checkbox -->
                     <div class="flex-shrink-0">
                         <input type="checkbox" 
@@ -732,18 +771,19 @@ class TaskMasterPro {
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
-                                <p class="text-lg font-medium text-gray-800 dark:text-white ${task.completed ? 'task-text-completed' : ''} break-words mb-1">
+                                <p class="text-base sm:text-lg font-medium text-gray-800 dark:text-white ${task.completed ? 'task-text-completed' : ''} break-words mb-1">
                                     ${this.escapeHtml(task.text)}
                                 </p>
-                                <div class="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+                                <div class="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                     <span class="flex items-center gap-1">
                                         <i class="fas fa-calendar-alt"></i>
-                                        ${createdDate}
+                                        <span class="hidden sm:inline">${createdDate}</span>
+                                        <span class="sm:hidden">${new Date(task.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                                     </span>
                                     ${isToday ? '<span class="px-2 py-1 text-xs bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full">Today</span>' : ''}
                                     <span class="flex items-center gap-1 ${priorityColors[task.priority]}">
                                         <i class="fas fa-flag"></i>
-                                        ${task.priority}
+                                        <span class="hidden sm:inline">${task.priority}</span>
                                     </span>
                                 </div>
                             </div>
@@ -751,16 +791,16 @@ class TaskMasterPro {
                     </div>
                     
                     <!-- Action Buttons -->
-                    <div class="flex items-center gap-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <button onclick="taskMasterPro.editTask(${task.id})" 
-                                class="p-3 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-110"
+                                class="action-btn p-2 sm:p-3 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg sm:rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-110"
                                 aria-label="Edit task">
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-edit text-sm sm:text-base"></i>
                         </button>
                         <button onclick="taskMasterPro.deleteTask(${task.id})" 
-                                class="p-3 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 transform hover:scale-110"
+                                class="action-btn p-2 sm:p-3 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg sm:rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 transform hover:scale-110"
                                 aria-label="Delete task">
-                            <i class="fas fa-trash"></i>
+                            <i class="fas fa-trash text-sm sm:text-base"></i>
                         </button>
                     </div>
                 </div>
@@ -783,7 +823,15 @@ class TaskMasterPro {
     showNotification(message, type = 'info') {
         // Create notification element
         const notification = document.createElement('div');
-        notification.className = `notification fixed top-6 right-6 z-50 p-4 rounded-2xl shadow-2xl transition-all duration-500 transform translate-x-full max-w-sm`;
+        notification.className = `notification fixed z-50 p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-2xl transition-all duration-500 transform max-w-sm`;
+        
+        // Mobile-specific positioning
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            notification.className += ` top-4 left-4 right-4 translate-y-full`;
+        } else {
+            notification.className += ` top-6 right-6 translate-x-full`;
+        }
         
         // Set colors and icons based on type
         const config = {
@@ -813,9 +861,9 @@ class TaskMasterPro {
         notification.className += ` ${typeConfig.bg} ${typeConfig.text}`;
         
         notification.innerHTML = `
-            <div class="flex items-center gap-3">
-                <i class="${typeConfig.icon} text-xl"></i>
-                <span class="font-medium">${message}</span>
+            <div class="flex items-center gap-2 sm:gap-3">
+                <i class="${typeConfig.icon} text-lg sm:text-xl"></i>
+                <span class="font-medium text-sm sm:text-base">${message}</span>
             </div>
         `;
         
@@ -824,12 +872,20 @@ class TaskMasterPro {
         
         // Animate in
         setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
+            if (isMobile) {
+                notification.style.transform = 'translateY(0)';
+            } else {
+                notification.style.transform = 'translateX(0)';
+            }
         }, 100);
         
         // Remove after 4 seconds
         setTimeout(() => {
-            notification.style.transform = 'translateX(100%)';
+            if (isMobile) {
+                notification.style.transform = 'translateY(-100%)';
+            } else {
+                notification.style.transform = 'translateX(100%)';
+            }
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.parentNode.removeChild(notification);

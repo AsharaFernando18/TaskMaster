@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>TaskMaster Pro - Advanced Task Management</title>
     <meta name="description" content="A premium, feature-rich task management application with stunning animations and modern design">
     <meta name="keywords" content="todo, task, productivity, organize, checklist, premium">
@@ -132,7 +132,7 @@
             100% { background-position: 0% 50%; }
         }
         
-        /* Floating Particles */
+        /* Floating Particles - Optimized for mobile */
         .particles {
             position: fixed;
             top: 0;
@@ -145,15 +145,22 @@
         
         .particle {
             position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.6);
+            width: 3px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.4);
             border-radius: 50%;
             animation: particleFloat 20s infinite linear;
         }
         
         .dark .particle {
-            background: rgba(99, 102, 241, 0.4);
+            background: rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Reduce particles on mobile for performance */
+        @media (max-width: 768px) {
+            .particle:nth-child(n+21) {
+                display: none;
+            }
         }
         
         @keyframes particleFloat {
@@ -173,26 +180,39 @@
             }
         }
         
-        /* Glass Morphism Enhanced */
+        /* Glass Morphism Enhanced - Mobile Optimized */
         .glass-morphism {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
         
         .dark .glass-morphism {
-            background: rgba(17, 24, 39, 0.3);
+            background: rgba(17, 24, 39, 0.4);
             border: 1px solid rgba(75, 85, 99, 0.3);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
-        /* Enhanced Button Styles */
+        /* Mobile-specific glass morphism */
+        @media (max-width: 768px) {
+            .glass-morphism {
+                backdrop-filter: blur(10px) saturate(150%);
+                background: rgba(255, 255, 255, 0.2);
+            }
+            
+            .dark .glass-morphism {
+                background: rgba(17, 24, 39, 0.5);
+            }
+        }
+        
+        /* Enhanced Button Styles - Mobile Touch Optimized */
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
+            min-height: 48px; /* Touch-friendly minimum */
         }
         
         .btn-primary::before {
@@ -206,20 +226,30 @@
             transition: left 0.5s;
         }
         
-        .btn-primary:hover::before {
+        .btn-primary:hover::before,
+        .btn-primary:active::before {
             left: 100%;
         }
         
-        .btn-primary:hover {
+        .btn-primary:hover,
+        .btn-primary:active {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
         }
         
-        /* Task Item Enhancements */
+        /* Mobile touch feedback */
+        @media (max-width: 768px) {
+            .btn-primary:active {
+                transform: scale(0.98);
+            }
+        }
+        
+        /* Task Item Enhancements - Mobile Optimized */
         .task-item {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            min-height: 60px; /* Touch-friendly */
         }
         
         .task-item::before {
@@ -233,32 +263,45 @@
             transition: left 0.6s ease;
         }
         
-        .task-item:hover::before {
+        .task-item:hover::before,
+        .task-item:active::before {
             left: 100%;
         }
         
         .task-item:hover {
-            transform: translateX(8px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
-        /* Checkbox Animation */
+        /* Mobile-specific task interactions */
+        @media (max-width: 768px) {
+            .task-item:hover {
+                transform: none;
+            }
+            
+            .task-item:active {
+                background: rgba(99, 102, 241, 0.05);
+            }
+        }
+        
+        /* Checkbox Animation - Touch Optimized */
         .checkbox-custom {
             appearance: none;
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border: 2px solid #d1d5db;
-            border-radius: 6px;
+            border-radius: 8px;
             position: relative;
             cursor: pointer;
             transition: all 0.3s ease;
             background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            flex-shrink: 0;
         }
         
         .checkbox-custom:checked {
             background: linear-gradient(135deg, #667eea, #764ba2);
             border-color: #667eea;
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
         
         .checkbox-custom:checked::after {
@@ -268,7 +311,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
             animation: checkmark 0.3s ease;
         }
@@ -291,7 +334,7 @@
             100% { background-position: -200% 0; }
         }
         
-        /* Notification Styles */
+        /* Notification Styles - Mobile Optimized */
         .notification {
             backdrop-filter: blur(20px);
             background: rgba(255, 255, 255, 0.9);
@@ -302,6 +345,21 @@
         .dark .notification {
             background: rgba(17, 24, 39, 0.9);
             border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+        
+        /* Mobile notification positioning */
+        @media (max-width: 768px) {
+            .notification {
+                top: 1rem !important;
+                right: 1rem !important;
+                left: 1rem !important;
+                max-width: none !important;
+                transform: translateY(-100%) !important;
+            }
+            
+            .notification.show {
+                transform: translateY(0) !important;
+            }
         }
         
         /* Scroll Animations */
@@ -328,11 +386,13 @@
             100% { background-position: -200% 0; }
         }
         
-        /* Enhanced Filter Buttons */
+        /* Enhanced Filter Buttons - Mobile Touch */
         .filter-btn {
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
+            min-height: 44px; /* Touch-friendly */
+            padding: 0.75rem 1rem;
         }
         
         .filter-btn::before {
@@ -348,45 +408,89 @@
         }
         
         .filter-btn.active::before,
-        .filter-btn:hover::before {
+        .filter-btn:hover::before,
+        .filter-btn:active::before {
             width: 100%;
         }
         
-        /* Floating Action Button */
+        /* Mobile filter button adjustments */
+        @media (max-width: 640px) {
+            .filter-btn {
+                font-size: 0.875rem;
+                padding: 0.5rem 0.75rem;
+            }
+        }
+        
+        /* Floating Action Button - Mobile Optimized */
         .fab {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 60px;
-            height: 60px;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 56px;
+            height: 56px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 24px;
+            font-size: 20px;
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
             transition: all 0.3s ease;
             z-index: 1000;
+            border: none;
+            cursor: pointer;
         }
         
-        .fab:hover {
-            transform: scale(1.1) rotate(90deg);
+        .fab:hover,
+        .fab:active {
+            transform: scale(1.1);
             box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
         }
         
-        /* Statistics Cards */
+        /* Mobile FAB adjustments */
+        @media (max-width: 768px) {
+            .fab {
+                bottom: 1rem;
+                right: 1rem;
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            
+            .fab:active {
+                transform: scale(0.95);
+            }
+        }
+        
+        /* Statistics Cards - Mobile Responsive */
         .stat-card {
             background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.2);
             transition: all 0.3s ease;
+            min-height: 100px;
         }
         
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Mobile stat card adjustments */
+        @media (max-width: 768px) {
+            .stat-card {
+                min-height: 80px;
+                padding: 1rem !important;
+            }
+            
+            .stat-card:hover {
+                transform: none;
+            }
+            
+            .stat-card:active {
+                background: rgba(255,255,255,0.15);
+            }
         }
         
         /* Dark mode specific enhancements */
@@ -394,169 +498,215 @@
             background: linear-gradient(135deg, rgba(17,24,39,0.3), rgba(17,24,39,0.1));
             border: 1px solid rgba(75,85,99,0.3);
         }
+        
+        /* Mobile-specific responsive utilities */
+        @media (max-width: 640px) {
+            .mobile-text-sm {
+                font-size: 0.875rem;
+            }
+            
+            .mobile-p-4 {
+                padding: 1rem;
+            }
+            
+            .mobile-gap-3 {
+                gap: 0.75rem;
+            }
+        }
+        
+        /* Touch-friendly action buttons */
+        .action-btn {
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Prevent text selection on mobile for better UX */
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* Safe area handling for notched devices */
+        @supports (padding: max(0px)) {
+            .safe-area-top {
+                padding-top: max(1rem, env(safe-area-inset-top));
+            }
+            
+            .safe-area-bottom {
+                padding-bottom: max(1rem, env(safe-area-inset-bottom));
+            }
+        }
     </style>
 </head>
-<body class="bg-animated min-h-screen transition-all duration-500 relative overflow-x-hidden">
+<body class="bg-animated min-h-screen transition-all duration-500 relative overflow-x-hidden safe-area-top safe-area-bottom">
     <!-- Floating Particles -->
     <div class="particles" id="particles"></div>
 
     <!-- Main Container -->
-    <div class="container mx-auto px-4 py-8 max-w-4xl relative z-10">
+    <div class="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-4xl relative z-10">
         <!-- Header Section -->
-        <header class="text-center mb-12 animate-fade-in">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-4">
+        <header class="text-center mb-6 sm:mb-12 animate-fade-in">
+            <div class="flex items-center justify-between mb-4 sm:mb-6">
+                <div class="flex items-center gap-2 sm:gap-4">
                     <div class="relative">
-                        <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg animate-bounce-gentle">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-lg sm:text-2xl font-bold shadow-lg animate-bounce-gentle">
                             <i class="fas fa-tasks"></i>
                         </div>
-                        <div class="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white text-xs animate-pulse">
+                        <div class="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white text-xs animate-pulse">
                             <i class="fas fa-star"></i>
                         </div>
                     </div>
-                    <div>
-                        <h1 class="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    <div class="text-left">
+                        <h1 class="text-2xl sm:text-3xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                             TaskMaster Pro
                         </h1>
-                        <p class="text-lg text-gray-600 dark:text-gray-300 mt-2">
+                        <p class="text-sm sm:text-lg text-gray-600 dark:text-gray-300 mt-1 sm:mt-2 hidden sm:block">
                             Elevate your productivity to new heights
+                        </p>
+                        <p class="text-xs text-gray-600 dark:text-gray-300 mt-1 sm:hidden">
+                            Boost your productivity
                         </p>
                     </div>
                 </div>
                 
                 <!-- Theme Toggle -->
                 <button id="theme-toggle" 
-                        class="p-4 rounded-2xl glass-morphism hover:scale-110 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 group">
-                    <i class="fas fa-sun text-yellow-500 dark:hidden text-xl group-hover:animate-spin"></i>
-                    <i class="fas fa-moon text-indigo-400 hidden dark:block text-xl group-hover:animate-bounce"></i>
+                        class="p-3 sm:p-4 rounded-xl sm:rounded-2xl glass-morphism hover:scale-110 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 group action-btn">
+                    <i class="fas fa-sun text-yellow-500 dark:hidden text-lg sm:text-xl group-hover:animate-spin"></i>
+                    <i class="fas fa-moon text-indigo-400 hidden dark:block text-lg sm:text-xl group-hover:animate-bounce"></i>
                 </button>
             </div>
             
             <!-- Progress Overview -->
-            <div class="glass-morphism rounded-3xl p-6 mb-8 animate-slide-up">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Today's Progress</h3>
-                    <span id="progress-percentage" class="text-2xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">0%</span>
+            <div class="glass-morphism rounded-2xl sm:rounded-3xl p-4 sm:p-6 mb-4 sm:mb-8 animate-slide-up">
+                <div class="flex items-center justify-between mb-3 sm:mb-4">
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white">Today's Progress</h3>
+                    <span id="progress-percentage" class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">0%</span>
                 </div>
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 sm:h-3 overflow-hidden">
                     <div id="progress-bar" class="progress-bar h-full rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
                 </div>
             </div>
         </header>
 
         <!-- Task Input Section -->
-        <div class="glass-morphism rounded-3xl shadow-2xl p-8 mb-8 animate-slide-in">
-            <form id="todo-form" class="flex gap-4">
+        <div class="glass-morphism rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-8 mb-4 sm:mb-8 animate-slide-in">
+            <form id="todo-form" class="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <div class="flex-1 relative group">
                     <input type="text" 
                            id="todo-input" 
                            placeholder="What needs to be done today?" 
-                           class="w-full px-6 py-4 border-2 border-transparent rounded-2xl focus:border-indigo-500 focus:outline-none transition-all duration-300 bg-white/50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-lg backdrop-blur-sm group-hover:bg-white/70 dark:group-hover:bg-gray-800/70"
+                           class="w-full px-4 sm:px-6 py-3 sm:py-4 border-2 border-transparent rounded-xl sm:rounded-2xl focus:border-indigo-500 focus:outline-none transition-all duration-300 bg-white/50 dark:bg-gray-800/50 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-base sm:text-lg backdrop-blur-sm group-hover:bg-white/70 dark:group-hover:bg-gray-800/70"
                            required>
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-6 pointer-events-none">
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-4 sm:pr-6 pointer-events-none">
                         <i class="fas fa-magic text-indigo-400 opacity-50 group-hover:opacity-100 transition-opacity duration-300"></i>
                     </div>
                 </div>
                 <button type="submit" 
-                        class="btn-primary px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 shadow-lg">
+                        class="btn-primary px-6 sm:px-8 py-3 sm:py-4 text-white font-semibold rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 shadow-lg text-sm sm:text-base">
                     <i class="fas fa-plus mr-2"></i>Add Task
                 </button>
             </form>
         </div>
 
         <!-- Filter Section -->
-        <div class="flex flex-wrap justify-center gap-4 mb-8 animate-slide-in">
-            <button class="filter-btn active px-6 py-3 rounded-2xl font-medium transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 glass-morphism text-white relative z-10" data-filter="all">
-                <i class="fas fa-list mr-2"></i>All (<span id="all-count">0</span>)
+        <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-4 sm:mb-8 animate-slide-in px-2 sm:px-0">
+            <button class="filter-btn active rounded-xl sm:rounded-2xl font-medium transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 glass-morphism text-white relative z-10 text-xs sm:text-sm" data-filter="all">
+                <i class="fas fa-list mr-1 sm:mr-2"></i>All (<span id="all-count">0</span>)
             </button>
-            <button class="filter-btn px-6 py-3 rounded-2xl font-medium transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 glass-morphism text-gray-700 dark:text-gray-300 relative z-10" data-filter="active">
-                <i class="fas fa-clock mr-2"></i>Active (<span id="active-count">0</span>)
+            <button class="filter-btn rounded-xl sm:rounded-2xl font-medium transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 glass-morphism text-gray-700 dark:text-gray-300 relative z-10 text-xs sm:text-sm" data-filter="active">
+                <i class="fas fa-clock mr-1 sm:mr-2"></i>Active (<span id="active-count">0</span>)
             </button>
-            <button class="filter-btn px-6 py-3 rounded-2xl font-medium transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 glass-morphism text-gray-700 dark:text-gray-300 relative z-10" data-filter="completed">
-                <i class="fas fa-check-circle mr-2"></i>Completed (<span id="completed-count">0</span>)
+            <button class="filter-btn rounded-xl sm:rounded-2xl font-medium transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 glass-morphism text-gray-700 dark:text-gray-300 relative z-10 text-xs sm:text-sm" data-filter="completed">
+                <i class="fas fa-check-circle mr-1 sm:mr-2"></i>Completed (<span id="completed-count">0</span>)
             </button>
         </div>
 
         <!-- Tasks Container -->
-        <div class="glass-morphism rounded-3xl shadow-2xl overflow-hidden animate-slide-up mb-8">
+        <div class="glass-morphism rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden animate-slide-up mb-4 sm:mb-8">
             <!-- Tasks List -->
             <ul id="todo-list" class="divide-y divide-gray-200/30 dark:divide-gray-700/30">
                 <!-- Tasks will be dynamically added here -->
             </ul>
             
             <!-- Empty State -->
-            <div id="empty-state" class="text-center py-16 px-6 hidden">
-                <div class="text-8xl text-gray-300 dark:text-gray-600 mb-6 animate-bounce-gentle">
+            <div id="empty-state" class="text-center py-8 sm:py-16 px-4 sm:px-6 hidden">
+                <div class="text-4xl sm:text-8xl text-gray-300 dark:text-gray-600 mb-4 sm:mb-6 animate-bounce-gentle">
                     <i class="fas fa-clipboard-list"></i>
                 </div>
-                <h3 class="text-2xl font-semibold text-gray-600 dark:text-gray-400 mb-4">No tasks found</h3>
-                <p class="text-gray-500 dark:text-gray-500 text-lg">Ready to conquer your day? Add your first task!</p>
+                <h3 class="text-lg sm:text-2xl font-semibold text-gray-600 dark:text-gray-400 mb-2 sm:mb-4">No tasks found</h3>
+                <p class="text-gray-500 dark:text-gray-500 text-sm sm:text-lg">Ready to conquer your day? Add your first task!</p>
             </div>
         </div>
 
         <!-- Statistics Dashboard -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-fade-in">
-            <div class="stat-card rounded-2xl p-6 text-center">
-                <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2" id="total-tasks">0</div>
-                <div class="text-sm text-gray-600 dark:text-gray-400 font-medium">Total Tasks</div>
-                <i class="fas fa-tasks text-indigo-500 text-2xl mt-2 opacity-50"></i>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8 animate-fade-in">
+            <div class="stat-card rounded-xl sm:rounded-2xl p-3 sm:p-6 text-center">
+                <div class="text-xl sm:text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-1 sm:mb-2" id="total-tasks">0</div>
+                <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">Total Tasks</div>
+                <i class="fas fa-tasks text-indigo-500 text-lg sm:text-2xl mt-1 sm:mt-2 opacity-50"></i>
             </div>
-            <div class="stat-card rounded-2xl p-6 text-center">
-                <div class="text-3xl font-bold text-green-600 dark:text-green-400 mb-2" id="completion-rate">0%</div>
-                <div class="text-sm text-gray-600 dark:text-gray-400 font-medium">Completion Rate</div>
-                <i class="fas fa-chart-line text-green-500 text-2xl mt-2 opacity-50"></i>
+            <div class="stat-card rounded-xl sm:rounded-2xl p-3 sm:p-6 text-center">
+                <div class="text-xl sm:text-3xl font-bold text-green-600 dark:text-green-400 mb-1 sm:mb-2" id="completion-rate">0%</div>
+                <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">Completion Rate</div>
+                <i class="fas fa-chart-line text-green-500 text-lg sm:text-2xl mt-1 sm:mt-2 opacity-50"></i>
             </div>
-            <div class="stat-card rounded-2xl p-6 text-center">
-                <div class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2" id="tasks-today">0</div>
-                <div class="text-sm text-gray-600 dark:text-gray-400 font-medium">Tasks Today</div>
-                <i class="fas fa-calendar-day text-blue-500 text-2xl mt-2 opacity-50"></i>
+            <div class="stat-card rounded-xl sm:rounded-2xl p-3 sm:p-6 text-center">
+                <div class="text-xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1 sm:mb-2" id="tasks-today">0</div>
+                <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">Tasks Today</div>
+                <i class="fas fa-calendar-day text-blue-500 text-lg sm:text-2xl mt-1 sm:mt-2 opacity-50"></i>
             </div>
-            <div class="stat-card rounded-2xl p-6 text-center">
-                <div class="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2" id="productivity-score">0</div>
-                <div class="text-sm text-gray-600 dark:text-gray-400 font-medium">Productivity Score</div>
-                <i class="fas fa-trophy text-purple-500 text-2xl mt-2 opacity-50"></i>
+            <div class="stat-card rounded-xl sm:rounded-2xl p-3 sm:p-6 text-center col-span-2 lg:col-span-1">
+                <div class="text-xl sm:text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1 sm:mb-2" id="productivity-score">0</div>
+                <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">Productivity Score</div>
+                <i class="fas fa-trophy text-purple-500 text-lg sm:text-2xl mt-1 sm:mt-2 opacity-50"></i>
             </div>
         </div>
 
         <!-- Bulk Actions -->
-        <div id="bulk-actions" class="flex flex-wrap justify-center gap-4 hidden animate-fade-in">
+        <div id="bulk-actions" class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 hidden animate-fade-in px-2 sm:px-0">
             <button id="complete-all" 
-                    class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-500/50 shadow-lg">
+                    class="px-4 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-500/50 shadow-lg text-sm sm:text-base">
                 <i class="fas fa-check-double mr-2"></i>Complete All
             </button>
             <button id="delete-completed" 
-                    class="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white rounded-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-500/50 shadow-lg">
+                    class="px-4 sm:px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-500/50 shadow-lg text-sm sm:text-base">
                 <i class="fas fa-trash mr-2"></i>Delete Completed
             </button>
         </div>
     </div>
 
     <!-- Floating Action Button -->
-    <button id="fab-add" class="fab hidden">
+    <button id="fab-add" class="fab hidden no-select">
         <i class="fas fa-plus"></i>
     </button>
 
     <!-- Edit Modal -->
     <div id="edit-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="glass-morphism rounded-3xl shadow-2xl max-w-md w-full animate-bounce-in">
-            <div class="p-8">
-                <h3 class="text-2xl font-semibold text-gray-800 dark:text-white mb-6 flex items-center gap-3">
+        <div class="glass-morphism rounded-2xl sm:rounded-3xl shadow-2xl max-w-md w-full animate-bounce-in mx-4">
+            <div class="p-6 sm:p-8">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white mb-4 sm:mb-6 flex items-center gap-3">
                     <i class="fas fa-edit text-indigo-600 dark:text-indigo-400"></i>
                     Edit Task
                 </h3>
                 <form id="edit-form">
                     <input type="text" 
                            id="edit-input" 
-                           class="w-full px-6 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-2xl focus:border-indigo-500 focus:outline-none transition-all duration-300 bg-white/50 dark:bg-gray-800/50 text-gray-800 dark:text-white mb-6 text-lg"
+                           class="w-full px-4 sm:px-6 py-3 sm:py-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl sm:rounded-2xl focus:border-indigo-500 focus:outline-none transition-all duration-300 bg-white/50 dark:bg-gray-800/50 text-gray-800 dark:text-white mb-4 sm:mb-6 text-base sm:text-lg"
                            required>
-                    <div class="flex gap-4 justify-end">
+                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-end">
                         <button type="button" 
                                 id="cancel-edit" 
-                                class="px-6 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-300 font-medium">
+                                class="px-4 sm:px-6 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-300 font-medium text-sm sm:text-base order-2 sm:order-1">
                             Cancel
                         </button>
                         <button type="submit" 
-                                class="px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 font-medium">
+                                class="px-6 sm:px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-xl sm:rounded-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 font-medium text-sm sm:text-base order-1 sm:order-2">
                             Save Changes
                         </button>
                     </div>
