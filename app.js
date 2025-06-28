@@ -878,34 +878,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create global instance
     window.taskMasterPro = new TaskMasterPro();
     
-    // Add demo tasks if none exist (for first-time users)
+    // Show welcome message for first-time users
     if (window.taskMasterPro.tasks.length === 0) {
-        const demoTasks = [
-            { text: '🎉 Welcome to TaskMaster Pro!', priority: 'high' },
-            { text: '✨ Experience the enhanced animations', priority: 'medium' },
-            { text: '🎨 Try the beautiful dark mode', priority: 'medium' },
-            { text: '📱 Test the responsive design', priority: 'low' },
-            { text: '🚀 Boost your productivity!', priority: 'high' }
-        ];
-        
-        // Add demo tasks with animation delay
         setTimeout(() => {
-            demoTasks.forEach((taskData, index) => {
-                setTimeout(() => {
-                    const task = {
-                        id: Date.now() + Math.random(),
-                        text: taskData.text,
-                        completed: index > 2,
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString(),
-                        priority: taskData.priority,
-                        category: 'demo'
-                    };
-                    window.taskMasterPro.tasks.push(task);
-                    window.taskMasterPro.saveTasks();
-                    window.taskMasterPro.render();
-                }, index * 300);
-            });
+            window.taskMasterPro.showNotification('Welcome to TaskMaster Pro! Start by adding your first task. ✨', 'info');
         }, 1000);
     }
 });
