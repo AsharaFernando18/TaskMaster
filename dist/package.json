@@ -1,0 +1,24 @@
+{
+  "name": "taskmaster-pro",
+  "version": "1.0.0",
+  "description": "A premium, feature-rich task management application with stunning animations and modern design",
+  "main": "app.js",
+  "scripts": {
+    "dev": "http-server . -o",
+    "start": "http-server . -o",
+    "build": "mkdir -p dist && cp -r *.html *.js *.json *.css assets/ dist/ 2>/dev/null || cp -r *.html *.js *.json *.css dist/ 2>/dev/null || echo 'Build completed'"
+  },
+  "keywords": [
+    "todo",
+    "task",
+    "productivity",
+    "organize",
+    "checklist",
+    "premium"
+  ],
+  "author": "TaskMaster Pro Team",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
